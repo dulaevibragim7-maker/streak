@@ -1,0 +1,1765 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Streak - Соц.сеть нового поколения</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Сброс и базовые стили */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #8B5CF6;
+            --primary-dark: #7C3AED;
+            --primary-light: #A78BFA;
+            --accent: #F59E0B;
+            --gradient: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            --gradient-accent: linear-gradient(135deg, var(--primary), var(--accent));
+            --gradient-card: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(124, 58, 237, 0.05));
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+            --bg-dark: #0F0F23;
+            --bg-darker: #0A0A15;
+            --bg-card: #1A1A2E;
+            --text: #FFFFFF;
+            --text-light: rgba(255, 255, 255, 0.85);
+            --text-lighter: rgba(255, 255, 255, 0.7);
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --radius-large: 32px;
+            --radius-medium: 24px;
+            --radius-small: 16px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+            cursor: none; /* Скрываем стандартный курсор для эффекта */
+        }
+
+        /* Улучшенный анимированный фон */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .gradient-sphere {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.2;
+            animation: floatSphere 20s infinite ease-in-out;
+        }
+
+        .sphere-1 {
+            width: 600px;
+            height: 600px;
+            background: var(--primary);
+            top: -200px;
+            left: -200px;
+            animation-delay: 0s;
+        }
+
+        .sphere-2 {
+            width: 500px;
+            height: 500px;
+            background: var(--accent);
+            top: 40%;
+            right: -150px;
+            animation-delay: 5s;
+            animation-duration: 25s;
+        }
+
+        .sphere-3 {
+            width: 400px;
+            height: 400px;
+            background: #7C3AED;
+            bottom: -100px;
+            left: 30%;
+            animation-delay: 10s;
+            animation-duration: 30s;
+        }
+
+        /* Анимированные линии на фоне */
+        .grid-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(139, 92, 246, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(139, 92, 246, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 40s linear infinite;
+            opacity: 0.3;
+        }
+
+        /* Плавающие частицы */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: var(--primary-light);
+            border-radius: 50%;
+            animation: particleFloat 15s infinite linear;
+            opacity: 0.3;
+        }
+
+        /* Интерактивные пятна (cursor/touch эффект) */
+        .interactive-spots {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .cursor-spot {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, rgba(139, 92, 246, 0) 70%);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            transition: width 0.4s, height 0.4s, opacity 0.6s;
+            mix-blend-mode: screen;
+            z-index: 1;
+        }
+
+        .touch-spot {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.4) 0%, rgba(245, 158, 11, 0) 70%);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            mix-blend-mode: screen;
+            z-index: 1;
+            animation: touchRipple 0.8s ease-out forwards;
+        }
+
+        /* Glassmorphism эффект */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+            border-radius: var(--radius-large);
+            transition: var(--transition);
+        }
+
+        .glass-card {
+            background: var(--gradient-card);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            border-radius: var(--radius-medium);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transition: left 0.7s ease;
+        }
+
+        .glass-card:hover::before {
+            left: 100%;
+        }
+
+        /* Контейнер */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Хедер с анимацией */
+        header {
+            padding: 25px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            background: rgba(15, 15, 35, 0.9);
+            border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+            animation: slideDown 0.5s ease-out;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .logo:hover {
+            transform: translateY(-2px);
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: white;
+            animation: pulseSoft 3s infinite ease-in-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-icon::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .logo:hover .logo-icon::after {
+            transform: translateX(100%);
+        }
+
+        .logo-text {
+            font-family: 'Urbanist', sans-serif;
+            font-size: 28px;
+            font-weight: 900;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-lighter);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 15px;
+            position: relative;
+            padding: 6px 0;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover {
+            color: var(--text);
+            transform: translateY(-1px);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient);
+            transition: width 0.4s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Герой секция с улучшенными анимациями */
+        .hero {
+            padding: 80px 0 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero-title {
+            font-family: 'Urbanist', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 30px;
+            letter-spacing: -0.5px;
+            position: relative;
+        }
+
+        .title-line {
+            display: block;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .animated-text {
+            display: inline-block;
+        }
+
+        .letter {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(20px) rotateX(-90deg);
+            animation: letterDrop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+
+        .gradient-text {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Анимированная волнистая линия */
+        .title-line::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 0;
+            width: 0;
+            height: 4px;
+            background: var(--gradient);
+            border-radius: 2px;
+            animation: lineGrow 1.5s ease-out forwards, wave 3s infinite ease-in-out;
+            animation-delay: 1.5s;
+            filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.3));
+        }
+
+        .title-line:nth-child(2)::after {
+            display: none;
+        }
+
+        .location-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(139, 92, 246, 0.1);
+            padding: 12px 24px;
+            border-radius: 50px;
+            margin: 30px 0;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            font-weight: 500;
+            color: var(--primary-light);
+            animation: fadeInUp 0.8s ease-out 0.5s both;
+            transition: var(--transition);
+        }
+
+        .location-badge:hover {
+            transform: translateY(-3px);
+            background: rgba(139, 92, 246, 0.15);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.2);
+        }
+
+        .location-badge i {
+            font-size: 18px;
+            animation: bounce 2s infinite ease-in-out;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-lighter);
+            margin: 30px auto 0;
+            max-width: 700px;
+            line-height: 1.7;
+            padding: 25px;
+            background: rgba(139, 92, 246, 0.05);
+            border-radius: var(--radius-medium);
+            border: 1px solid rgba(139, 92, 246, 0.1);
+            animation: fadeInUp 0.8s ease-out 1s both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-subtitle::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.05), transparent);
+            animation: shine 5s infinite;
+        }
+
+        /* Центральный логотип с анимацией */
+        .hero-logo {
+            margin: 40px 0;
+            animation: float 6s infinite ease-in-out;
+        }
+
+        .hero-logo-inner {
+            width: 140px;
+            height: 140px;
+            background: var(--gradient);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            color: white;
+            margin: 0 auto;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            animation: pulseGlow 4s infinite ease-in-out;
+        }
+
+        .hero-logo-inner:hover {
+            transform: scale(1.1);
+            animation: none;
+        }
+
+        .hero-logo-inner::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: var(--gradient);
+            border-radius: 32px;
+            z-index: -1;
+            filter: blur(10px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .hero-logo-inner:hover::before {
+            opacity: 0.5;
+        }
+
+        /* Возможности */
+        .features {
+            padding: 100px 0;
+            position: relative;
+        }
+
+        .section-title {
+            font-family: 'Urbanist', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--gradient);
+            border-radius: 2px;
+            animation: pulseWidth 2s infinite ease-in-out;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            padding: 40px 30px;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .feature-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+            animation: cardPop 0.6s ease-out;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--gradient);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 26px;
+            color: white;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-icon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .feature-card:hover .feature-icon::before {
+            left: 100%;
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.15) rotate(5deg);
+        }
+
+        .feature-card h3 {
+            font-family: 'Urbanist', sans-serif;
+            font-size: 22px;
+            margin-bottom: 15px;
+            font-weight: 700;
+            position: relative;
+            display: inline-block;
+        }
+
+        .feature-card h3::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: var(--gradient);
+            transition: width 0.4s ease;
+        }
+
+        .feature-card:hover h3::after {
+            width: 40px;
+        }
+
+        .feature-card p {
+            color: var(--text-lighter);
+            font-size: 15px;
+            line-height: 1.6;
+            transition: var(--transition);
+        }
+
+        .feature-card:hover p {
+            color: var(--text-light);
+        }
+
+        /* FAQ */
+        .faq {
+            padding: 100px 0;
+        }
+
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            margin-bottom: 15px;
+            overflow: hidden;
+            cursor: pointer;
+            border-radius: var(--radius-medium);
+            background: var(--bg-card);
+            transition: var(--transition);
+            border: 1px solid rgba(139, 92, 246, 0.1);
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .faq-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .faq-item.active {
+            border-color: rgba(139, 92, 246, 0.3);
+            transform: scale(1.01);
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 500px;
+            padding: 25px 30px;
+        }
+
+        .faq-item.active .faq-question i {
+            transform: rotate(180deg);
+            color: var(--primary);
+        }
+
+        .faq-question {
+            padding: 25px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .faq-question:hover {
+            background: rgba(139, 92, 246, 0.05);
+        }
+
+        .faq-question h3 {
+            font-family: 'Urbanist', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            max-width: 85%;
+            color: var(--text);
+        }
+
+        .faq-question i {
+            font-size: 18px;
+            color: var(--primary-light);
+            transition: var(--transition);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            padding: 0 30px;
+            overflow: hidden;
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .faq-answer p {
+            color: var(--text-lighter);
+            font-size: 15px;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+
+        .faq-answer .telegram-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(139, 92, 246, 0.1);
+            padding: 10px 18px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-light);
+            font-weight: 500;
+            transition: var(--transition);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .faq-answer .telegram-link:hover {
+            background: rgba(139, 92, 246, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .faq-answer .telegram-link i {
+            font-size: 18px;
+            transition: var(--transition);
+        }
+
+        .faq-answer .telegram-link:hover i {
+            transform: scale(1.2);
+        }
+
+        /* Загрузка */
+        .download {
+            padding: 100px 0 140px;
+            text-align: center;
+        }
+
+        .download-card {
+            padding: 60px 50px;
+            max-width: 900px;
+            margin: 0 auto;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .download-title {
+            font-family: 'Urbanist', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            position: relative;
+            display: inline-block;
+        }
+
+        .download-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--gradient);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.6s ease;
+        }
+
+        .download-card:hover .download-title::after {
+            transform: scaleX(1);
+        }
+
+        .download-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-lighter);
+            max-width: 600px;
+            margin: 0 auto 30px;
+            line-height: 1.6;
+        }
+
+        .telegram-notice {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(139, 92, 246, 0.1);
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin-top: 20px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            text-decoration: none;
+            transition: var(--transition);
+            animation: pulseSoft 3s infinite ease-in-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .telegram-notice:hover {
+            background: rgba(139, 92, 246, 0.15);
+            transform: translateY(-5px) scale(1.05);
+            animation: none;
+            box-shadow: 0 20px 40px rgba(139, 92, 246, 0.2);
+        }
+
+        .telegram-notice i {
+            font-size: 24px;
+            color: var(--primary-light);
+            transition: var(--transition);
+        }
+
+        .telegram-notice:hover i {
+            transform: rotate(10deg) scale(1.2);
+        }
+
+        .telegram-notice span {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        .telegram-notice .highlight {
+            color: var(--primary-light);
+            font-weight: 600;
+            position: relative;
+        }
+
+        .telegram-notice .highlight::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: var(--primary-light);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .telegram-notice:hover .highlight::after {
+            transform: scaleX(1);
+        }
+
+        /* Футер */
+        footer {
+            padding: 50px 0 30px;
+            border-top: 1px solid rgba(139, 92, 246, 0.1);
+            text-align: center;
+            background: linear-gradient(180deg, transparent, rgba(139, 92, 246, 0.05));
+            animation: fadeIn 1s ease-out;
+        }
+
+        .footer-content {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            font-family: 'Urbanist', sans-serif;
+            font-size: 26px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .footer-logo:hover {
+            transform: translateY(-3px);
+        }
+
+        .footer-logo i {
+            color: var(--primary);
+            animation: pulseSoft 3s infinite ease-in-out;
+        }
+
+        .footer-tagline {
+            color: var(--text-lighter);
+            font-size: 1rem;
+            margin-bottom: 30px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+        }
+
+        .copyright {
+            color: var(--text-lighter);
+            font-size: 14px;
+            margin-top: 20px;
+            opacity: 0.7;
+            position: relative;
+        }
+
+        .copyright::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.3), transparent);
+        }
+
+        /* Кнопка наверх */
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            border: none;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .scroll-top::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .scroll-top:hover::before {
+            transform: translateX(100%);
+        }
+
+        .scroll-top.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .scroll-top:hover {
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+        }
+
+        /* Анимации */
+        @keyframes floatSphere {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            33% {
+                transform: translate(50px, 50px) scale(1.1);
+            }
+            66% {
+                transform: translate(-30px, 30px) scale(0.9);
+            }
+        }
+
+        @keyframes gridMove {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 50px 50px;
+            }
+        }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.3;
+            }
+            90% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes letterDrop {
+            to {
+                opacity: 1;
+                transform: translateY(0) rotateX(0);
+            }
+        }
+
+        @keyframes lineGrow {
+            to {
+                width: 100%;
+            }
+        }
+
+        @keyframes wave {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            50% {
+                transform: translateX(10px);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        @keyframes pulseSoft {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% {
+                box-shadow: 0 10px 30px rgba(139, 92, 246, 0.2);
+            }
+            50% {
+                box-shadow: 0 15px 40px rgba(139, 92, 246, 0.3);
+            }
+        }
+
+        @keyframes pulseWidth {
+            0%, 100% {
+                width: 80px;
+            }
+            50% {
+                width: 120px;
+            }
+        }
+
+        @keyframes cardPop {
+            0% {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            70% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes shine {
+            0% {
+                left: -100%;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+
+        /* Новая анимация для touch-эффекта */
+        @keyframes touchRipple {
+            0% {
+                width: 0;
+                height: 0;
+                opacity: 0.7;
+            }
+            100% {
+                width: 200px;
+                height: 200px;
+                opacity: 0;
+            }
+        }
+
+        @keyframes cursorPulse {
+            0%, 100% {
+                width: 100px;
+                height: 100px;
+                opacity: 0.4;
+            }
+            50% {
+                width: 120px;
+                height: 120px;
+                opacity: 0.3;
+            }
+        }
+
+        /* Адаптивность */
+        @media (max-width: 1200px) {
+            .hero-title {
+                font-size: 3rem;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .hero {
+                padding: 60px 0 100px;
+            }
+
+            .hero-logo-inner {
+                width: 120px;
+                height: 120px;
+                font-size: 40px;
+            }
+
+            .section-title {
+                font-size: 2.4rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 20px;
+            }
+
+            .hero-title {
+                font-size: 2.4rem;
+            }
+
+            .section-title {
+                font-size: 2.2rem;
+            }
+
+            .download-title {
+                font-size: 2.2rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 0 20px;
+            }
+
+            .title-line::after {
+                bottom: -8px;
+            }
+
+            .hero-logo-inner {
+                width: 100px;
+                height: 100px;
+                font-size: 35px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+            }
+
+            .download-title {
+                font-size: 1.8rem;
+            }
+
+            .feature-card, .faq-question, .download-card {
+                padding: 25px 20px;
+            }
+
+            .scroll-top {
+                width: 45px;
+                height: 45px;
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .hero-subtitle {
+                padding: 20px;
+            }
+
+            .location-badge {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+        }
+
+        /* Для мобильных устройств возвращаем стандартный курсор */
+        @media (hover: none) and (pointer: coarse) {
+            body {
+                cursor: default;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Улучшенный анимированный фон -->
+    <div class="bg-animation">
+        <div class="gradient-sphere sphere-1"></div>
+        <div class="gradient-sphere sphere-2"></div>
+        <div class="gradient-sphere sphere-3"></div>
+        <div class="grid-lines"></div>
+        <div class="particles" id="particles"></div>
+    </div>
+
+    <!-- Интерактивные пятна -->
+    <div class="interactive-spots" id="interactiveSpots"></div>
+
+    <!-- Хедер -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="logo-text">Streak</div>
+                </a>
+                <div class="nav-links">
+                    <a href="#features" class="nav-link">Возможности</a>
+                    <a href="#faq" class="nav-link">FAQ</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Герой секция -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span class="title-line">
+                        <span class="animated-text" id="line1"></span>
+                    </span>
+                    <span class="title-line">
+                        <span class="animated-text gradient-text" id="line2"></span>
+                    </span>
+                </h1>
+
+                <div class="location-badge">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Разрабатывается в Чеченской Республике</span>
+                </div>
+
+                <div class="hero-logo">
+                    <div class="hero-logo-inner glass">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                </div>
+
+                <p class="hero-subtitle">
+                    Streak — инновационная соц.сеть, создающаяся в Чеченской Республике.
+                    Мы объединяем передовые технологии с надежностью и безопасностью.
+                    Следите за обновлениями в нашем Telegram-канале, чтобы быть первыми.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Возможности -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">Что предлагает Streak</h2>
+            <div class="features-grid">
+                <div class="feature-card glass-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Безопасность</h3>
+                    <p>End-to-end шифрование для всех сообщений и файлов. Ваши данные защищены.</p>
+                </div>
+                <div class="feature-card glass-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Скорость</h3>
+                    <p>Мгновенная доставка сообщений благодаря оптимизированной архитектуре.</p>
+                </div>
+                <div class="feature-card glass-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <h3>Надежность</h3>
+                    <p>Мощные сервера с гарантией доступности 99.9% и резервным копированием.</p>
+                </div>
+                <div class="feature-card glass-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-infinity"></i>
+                    </div>
+                    <h3>Безлимит</h3>
+                    <p>Неограниченное хранение истории сообщений и медиафайлов.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="faq">
+        <div class="container">
+            <h2 class="section-title">Часто задаваемые вопросы</h2>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Когда начнется бета-тестирование?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Информация о начале бета-тестирования будет опубликована в нашем Telegram-канале.</p>
+                        <a href="https://t.me/streak_infa" target="_blank" class="telegram-link">
+                            <i class="fab fa-telegram"></i>
+                            @streak_infa
+                        </a>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Почему разработка ведется в Чечне?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Мы верим в развитие IT-индустрии во всех регионах России. Чеченская Республика предоставляет отличные условия для технологических стартапов.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Будет ли Streak бесплатным?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Да, Streak будет полностью бесплатным для всех пользователей, но будет включать Premium-функции.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>На каких платформах будет доступен?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>iOS, Android и веб-версия. Подробности в нашем канале.</p>
+                        <a href="https://t.me/streak_infa" target="_blank" class="telegram-link">
+                            <i class="fab fa-telegram"></i>
+                            @streak_infa
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Загрузка -->
+    <section id="download" class="download">
+        <div class="container">
+            <div class="download-card glass-card">
+                <h2 class="download-title">Следите за новостями</h2>
+                <p class="download-subtitle">
+                    Вся актуальная информация о запуске, новых функциях и обновлениях
+                    публикуется в нашем Telegram-канале.
+                </p>
+
+                <a href="https://t.me/streak_infa" target="_blank" class="telegram-notice">
+                    <i class="fab fa-telegram"></i>
+                    <span>Подпишитесь на <span class="highlight">@streak_infa</span></span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Футер -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <i class="fas fa-bolt"></i>
+                    <span>Streak</span>
+                </div>
+                <p class="footer-tagline">
+                    Соц.сеть нового поколения. Разрабатывается в Чеченской Республике.
+                </p>
+                <p class="copyright">© 2025-2026 Streak Messenger. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Кнопка наверх -->
+    <button class="scroll-top" id="scrollTop">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Создание частиц на фоне
+            function createParticles() {
+                const particlesContainer = document.getElementById('particles');
+                const particleCount = 30;
+
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+
+                    // Случайная позиция
+                    const left = Math.random() * 100;
+                    const top = Math.random() * 100;
+                    const size = 2 + Math.random() * 4;
+                    const delay = Math.random() * 15;
+                    const duration = 10 + Math.random() * 20;
+
+                    particle.style.left = `${left}%`;
+                    particle.style.top = `${top}%`;
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    particle.style.animationDelay = `${delay}s`;
+                    particle.style.animationDuration = `${duration}s`;
+
+                    particlesContainer.appendChild(particle);
+                }
+            }
+
+            createParticles();
+
+            // Анимация текста
+            const lines = [
+                { id: 'line1', text: 'НОВЫЙ СТАНДАРТ', delay: 0 },
+                { id: 'line2', text: 'ОБЩЕНИЯ', delay: 0.3 }
+            ];
+
+            let totalDelay = 0;
+
+            lines.forEach((line) => {
+                const lineElement = document.getElementById(line.id);
+                const letters = line.text.split('');
+
+                letters.forEach((letter, index) => {
+                    const span = document.createElement('span');
+                    span.className = 'letter';
+                    span.textContent = letter === ' ' ? '\u00A0' : letter;
+                    span.style.animationDelay = `${totalDelay + (index * 0.05)}s`;
+                    lineElement.appendChild(span);
+                });
+
+                totalDelay += line.delay + (letters.length * 0.05);
+            });
+
+            // Интерактивные пятна
+            const interactiveSpots = document.getElementById('interactiveSpots');
+            let cursorSpot = null;
+            let isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            let spotTimeout = null;
+
+            // Создание пятна для курсора (только для ПК)
+            if (!isMobile) {
+                cursorSpot = document.createElement('div');
+                cursorSpot.className = 'cursor-spot';
+                cursorSpot.style.width = '100px';
+                cursorSpot.style.height = '100px';
+                cursorSpot.style.opacity = '0.4';
+                cursorSpot.style.animation = 'cursorPulse 3s infinite ease-in-out';
+                interactiveSpots.appendChild(cursorSpot);
+            }
+
+            // Обработчик движения мыши
+            function handleMouseMove(e) {
+                if (cursorSpot) {
+                    cursorSpot.style.left = e.clientX + 'px';
+                    cursorSpot.style.top = e.clientY + 'px';
+                }
+            }
+
+            // Обработчик клика/касания
+            function handleInteraction(e) {
+                const x = e.clientX || e.touches[0].clientX;
+                const y = e.clientY || e.touches[0].clientY;
+
+                // Создаем анимированное пятно
+                const spot = document.createElement('div');
+                spot.className = 'touch-spot';
+                spot.style.left = x + 'px';
+                spot.style.top = y + 'px';
+
+                interactiveSpots.appendChild(spot);
+
+                // Удаляем пятно после завершения анимации
+                setTimeout(() => {
+                    if (spot.parentNode === interactiveSpots) {
+                        interactiveSpots.removeChild(spot);
+                    }
+                }, 800);
+
+                // Если это касание на мобильном устройстве, добавляем вибрацию
+                if (isMobile && 'vibrate' in navigator) {
+                    navigator.vibrate(30);
+                }
+            }
+
+            // Обработчик двойного клика
+            function handleDoubleClick(e) {
+                const x = e.clientX;
+                const y = e.clientY;
+
+                // Создаем несколько пятен для эффекта взрыва
+                for (let i = 0; i < 5; i++) {
+                    setTimeout(() => {
+                        const spot = document.createElement('div');
+                        spot.className = 'touch-spot';
+
+                        // Разброс координат
+                        const offsetX = (Math.random() - 0.5) * 100;
+                        const offsetY = (Math.random() - 0.5) * 100;
+
+                        spot.style.left = (x + offsetX) + 'px';
+                        spot.style.top = (y + offsetY) + 'px';
+                        spot.style.background = `radial-gradient(circle, rgba(${Math.random() * 255}, ${Math.random() * 255}, 255, 0.4) 0%, rgba(${Math.random() * 255}, ${Math.random() * 255}, 255, 0) 70%)`;
+
+                        interactiveSpots.appendChild(spot);
+
+                        setTimeout(() => {
+                            if (spot.parentNode === interactiveSpots) {
+                                interactiveSpots.removeChild(spot);
+                            }
+                        }, 800);
+                    }, i * 50);
+                }
+            }
+
+            // Добавляем обработчики событий
+            if (!isMobile) {
+                document.addEventListener('mousemove', handleMouseMove);
+                document.addEventListener('click', handleInteraction);
+                document.addEventListener('dblclick', handleDoubleClick);
+            } else {
+                document.addEventListener('touchstart', handleInteraction);
+            }
+
+            // Управление прозрачностью пятна при бездействии
+            let inactivityTimer = null;
+            function resetInactivityTimer() {
+                if (cursorSpot) {
+                    cursorSpot.style.opacity = '0.4';
+                    cursorSpot.style.transition = 'opacity 0.5s ease';
+                }
+
+                clearTimeout(inactivityTimer);
+                inactivityTimer = setTimeout(() => {
+                    if (cursorSpot) {
+                        cursorSpot.style.opacity = '0.1';
+                    }
+                }, 2000);
+            }
+
+            if (!isMobile) {
+                document.addEventListener('mousemove', resetInactivityTimer);
+                document.addEventListener('click', resetInactivityTimer);
+                resetInactivityTimer(); // Запускаем таймер
+            }
+
+            // Плавная прокрутка
+            const links = document.querySelectorAll('a[href^="#"]');
+            links.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            // FAQ аккордеон
+            const faqItems = document.querySelectorAll('.faq-item');
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+
+                question.addEventListener('click', () => {
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item && otherItem.classList.contains('active')) {
+                            otherItem.classList.remove('active');
+                        }
+                    });
+
+                    item.classList.toggle('active');
+                });
+            });
+
+            // Кнопка наверх
+            const scrollTopBtn = document.getElementById('scrollTop');
+
+            window.addEventListener('scroll', () => {
+                if (window.pageYOffset > 400) {
+                    scrollTopBtn.classList.add('visible');
+                } else {
+                    scrollTopBtn.classList.remove('visible');
+                }
+
+                animateOnScroll();
+            });
+
+            scrollTopBtn.addEventListener('click', () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+
+            // Анимация появления элементов
+            const animatedElements = document.querySelectorAll('.feature-card, .faq-item');
+
+            function animateOnScroll() {
+                const windowHeight = window.innerHeight;
+
+                animatedElements.forEach(element => {
+                    const elementTop = element.getBoundingClientRect().top;
+
+                    if (elementTop < windowHeight - 100) {
+                        element.classList.add('visible');
+                    }
+                });
+            }
+
+            // Эффекты наведения
+            const interactiveElements = document.querySelectorAll('.feature-card, .telegram-link, .telegram-notice, .hero-logo-inner');
+            interactiveElements.forEach(element => {
+                element.addEventListener('mouseenter', function() {
+                    if (this.classList.contains('feature-card') || this.classList.contains('telegram-notice')) {
+                        this.style.transform = 'translateY(-10px) scale(1.02)';
+                    } else if (this.classList.contains('telegram-link')) {
+                        this.style.transform = 'translateY(-3px)';
+                    }
+                });
+
+                element.addEventListener('mouseleave', function() {
+                    if (this.classList.contains('feature-card') || this.classList.contains('telegram-notice')) {
+                        this.style.transform = 'translateY(0) scale(1)';
+                    } else if (this.classList.contains('telegram-link')) {
+                        this.style.transform = 'translateY(0)';
+                    }
+                });
+            });
+
+            // Клик по логотипу
+            const heroLogo = document.querySelector('.hero-logo-inner');
+            if (heroLogo) {
+                heroLogo.addEventListener('click', function() {
+                    this.style.transform = 'scale(1.3) rotate(360deg)';
+                    this.style.transition = 'transform 0.8s ease';
+
+                    setTimeout(() => {
+                        this.style.transform = '';
+                        this.style.transition = '';
+                    }, 800);
+                });
+            }
+
+            // Анимация логотипа в хедере
+            const logo = document.querySelector('.logo');
+            logo.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                const icon = this.querySelector('.logo-icon');
+                icon.style.transform = 'scale(1.2) rotate(180deg)';
+                icon.style.transition = 'transform 0.6s ease';
+
+                setTimeout(() => {
+                    icon.style.transform = '';
+                    icon.style.transition = '';
+                }, 600);
+
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+
+            // Автоматическое открытие первого FAQ
+            setTimeout(() => {
+                if (faqItems.length > 0) {
+                    faqItems[0].classList.add('active');
+                }
+            }, 2000);
+
+            // Запуск анимации
+            animateOnScroll();
+
+            // Параллакс эффект для фоновых сфер
+            window.addEventListener('scroll', () => {
+                const scrolled = window.pageYOffset;
+                const spheres = document.querySelectorAll('.gradient-sphere');
+
+                spheres.forEach((sphere, index) => {
+                    const speed = 0.1 + (index * 0.03);
+                    sphere.style.transform = `translateY(${scrolled * speed}px)`;
+                });
+            });
+
+            // Инструкция для пользователя
+            console.log('%c? Streak Interactive Effects ?', 'color: #8B5CF6; font-size: 16px; font-weight: bold;');
+            console.log('%cНа ПК: двигайте курсор для создания светящегося пятна', 'color: #A78BFA;');
+            console.log('%cНа ПК: кликните для создания цветного круга', 'color: #A78BFA;');
+            console.log('%cНа ПК: двойной клик для "взрыва" цвета', 'color: #A78BFA;');
+            console.log('%cНа мобильных: касание для создания анимации', 'color: #A78BFA;');
+        });
+    </script>
+</body>
+</html>
